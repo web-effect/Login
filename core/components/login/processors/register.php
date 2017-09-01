@@ -298,6 +298,10 @@ class LoginRegisterProcessor extends LoginProcessor {
         $emailProperties['tplAlt'] = $emailTplAlt;
         $emailProperties['tplType'] = $emailTplType;
         $emailProperties['password'] = $this->dictionary->get($this->controller->getProperty('passwordField','password'));
+        $emailProperties['emailFromName'] = $this->controller->getProperty('activationEmailFromName');
+        $emailProperties['emailFrom'] = $this->controller->getProperty('activationEmailFrom');
+        $emailProperties['emailReplyToName'] = $this->controller->getProperty('activationEmailReplyToName');
+        $emailProperties['emailReplyTo'] = $this->controller->getProperty('activationEmailReplyTo');
 
         $this->setCachePassword($pword);
         return $emailProperties;
