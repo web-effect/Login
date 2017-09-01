@@ -221,6 +221,10 @@ class LoginForgotPasswordController extends LoginController {
         $emailProperties['tpl'] = $this->getProperty('emailTpl');
         $emailProperties['tplAlt'] = $this->getProperty('emailTplAlt','');
         $emailProperties['tplType'] = $this->getProperty('emailTplType');
+        $emailProperties['emailFromName'] = $this->getProperty('emailFromName');
+        $emailProperties['emailFrom'] = $this->getProperty('emailFrom');
+        $emailProperties['emailReplyToName'] = $this->getProperty('emailReplyToName');
+        $emailProperties['emailReplyTo'] = $this->getProperty('emailReplyTo');
 
         /* now set new password to cache to prevent middleman attacks */
         $this->modx->cacheManager->set('login/resetpassword/'.$fields['username'],$password);
