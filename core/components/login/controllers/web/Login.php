@@ -29,6 +29,8 @@ class LoginLoginController extends LoginController {
     public $isAuthenticated = false;
     /** @var LoginDictionary $dictionary */
     public $dictionary;
+    private $_content='';
+    private $form_render=true;
 
     public function initialize() {
         $this->setDefaultProperties(array(
@@ -66,8 +68,8 @@ class LoginLoginController extends LoginController {
         if (!empty($_REQUEST[$this->getProperty('actionKey','service')])) {
             $this->handleRequest();
         }
-        $content = $this->renderForm();
-        return $this->output($content);
+        if($this->form_render)$this->_content .=  $this->renderForm();
+        return $this->output($this->_content);
     }
 
     /**
@@ -335,12 +337,12 @@ class LoginLoginController extends LoginController {
                 $loginResourceParams = $this->modx->fromJSON($loginResourceParams);
             }
             $url = $this->modx->makeUrl($loginResourceId,'',$loginResourceParams,'full');
-            $this->modx->sendRedirect($url);
         } elseif (!empty($responseArray) && !empty($responseArray['url'])) {
-            $this->modx->sendRedirect($responseArray['url']);
+            $url=$responseArray['url'];
         } else {
-            $this->modx->sendRedirect($this->modx->getOption('site_url'));
+            $url=$this->modx->getOption('site_url');
         }
+        $this->isXHttp()?$this->XHttpRedirect($url):$this->modx->sendRedirect($url);
     }
 
     public function logout() {
@@ -435,17 +437,25 @@ class LoginLoginController extends LoginController {
         /* redirect */
         $logoutResourceId = $this->getProperty('logoutResourceId',0);
         if (!empty($responseArray) && !empty($responseArray['url'])) {
-            $this->modx->sendRedirect($responseArray['url']);
+        	$url = $responseArray['url'];
         } elseif (!empty($logoutResourceId)) {
             $logoutResourceParams = $this->getProperty('logoutResourceParams','');
             if (!empty($logoutResourceParams)) {
                 $logoutResourceParams = $this->modx->fromJSON($logoutResourceParams);
             }
             $url = $this->modx->makeUrl($logoutResourceId,'',$logoutResourceParams,'full');
-            $this->modx->sendRedirect($url);
         } else {
-            $this->modx->sendRedirect($_SERVER['REQUEST_URI']);
+            $url = $_SERVER['REQUEST_URI'];
         }
+        $this->isXHttp()?$this->XHttpRedirect($url):$this->modx->sendRedirect($url);
+    }
+    
+    private function isXHttp(){
+    	return !empty($_SERVER['HTTP_X_REQUESTED_WITH'])&&strtolower($_SERVER['HTTP_X_REQUESTED_WITH'])=='xmlhttprequest';
+    }
+    private function XHttpRedirect($url){
+    	$this->_content=json_encode(array('redirect'=>true,'location'=>$url));
+    	$this->form_render=false;
     }
 }
 return 'LoginLoginController';
